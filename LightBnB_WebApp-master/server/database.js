@@ -146,12 +146,78 @@ exports.getAllReservations = getAllReservations;
  * @return {Promise<[{}]>}  A promise to the properties.
  */
 const getAllProperties = (options, limit = 10) => {
+  
+
+  // WHERE city LIKE '%ancouv%'
+  //   GROUP BY properties.id
+  //   HAVING avg(property_reviews.rating) >= 4
+  //   ORDER BY cost_per_night
+
+  const queryParams = [];
+
+  let queryString = `
+  SELECT properties.*, avg(property_reviews.rating) as average_rating
+  FROM properties
+  JOIN property_reviews ON properties.id = property_id 
+  `;
+
+  if (options.city) {
+    queryParams.push(`%${options.city}%`);
+    queryString += `WHERE properties.city LIKE $${queryParams.length} `
+  }
+  
+  if (options.id) {
+    if (queryParams.length === 0) {
+      queryString += `WHERE `
+    }
+    else {
+      queryString += `AND `
+    }
+    queryParams.push(`${options.id}`);
+    queryString += `id = $${queryParams.length} `
+  }
+
+  if (options.minimum_price_per_night) {
+    if (queryParams.length === 0) {
+      queryString += `WHERE `
+    }
+    else {
+      queryString += `AND `
+    }
+    queryParams.push(`${options.minimum_price_per_night}`);
+    queryString += `properties.cost_per_night >= $${queryParams.length} `;
+  }
+  console.log(options);
+
+  if (options.maximum_price_per_night) {
+    if (queryParams.length === 0) {
+      queryString += `WHERE `
+    }
+    else {
+      queryString += `AND `
+    }
+    queryParams.push(`${options.maximum_price_per_night}`)
+    queryString += `properties.cost_per_night <= $${queryParams.length} `;
+  }
+
+  
+ 
+
+  
+  queryString += `
+  GROUP BY properties.id`
+  if (options.minimum_rating) {
+    queryParams.push(`${options.minimum_rating}`)
+    queryString += ` HAVING avg(property_reviews.rating)  >= $${queryParams.length} `;
+  }
+  queryParams.push(limit);
+  queryString += `
+  ORDER BY properties.cost_per_night
+  LIMIT $${queryParams.length};  
+  `;
+
   return pool
-  .query( `
-    SELECT *
-    FROM properties
-    LIMIT $1
-  `, [limit])
+  .query(queryString, queryParams)
   .then((result) => result.rows)
   .catch((err) => { 
     console.log(err.message)
