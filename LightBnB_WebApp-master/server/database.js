@@ -25,8 +25,6 @@ const getUserWithEmail = function(email) {
     WHERE email = $1
   `, [email])
   .then((result) => {
-    // console.log(result.rows);
-    // console.log(result.rows[0]);
     return result.rows[0];
   })
   .catch((err) => { 
@@ -61,15 +59,12 @@ const getUserWithId = function(id) {
     WHERE id = $1
   `, [id])
   .then((result) => {
-    // console.log(result.rows);
-    // console.log(result.rows[0]);
     return result.rows[0];
   })
   .catch((err) => { 
     console.log(err.message)
   });
 
-  //return Promise.resolve(users[id]);
 }
 exports.getUserWithId = getUserWithId;
 
@@ -89,19 +84,12 @@ const addUser =  function(user) {
     RETURNING *;
   `, [user.name, user.email, user.password])
   .then((result) => {
-    // console.log(result.rows);
-    // console.log("hi");
-    // console.log(result);
     return result;
   })
   .catch((err) => { 
     console.log(err.message)
   });
 
-  // const userId = Object.keys(users).length + 1;
-  // user.id = userId;
-  // users[userId] = user;
-  // return Promise.resolve(user);
 }
 exports.addUser = addUser;
 
@@ -123,17 +111,11 @@ const getAllReservations = function(guest_id, limit = 10) {
     LIMIT $2
   `, [guest_id, limit])
   .then((result) => {
-    // console.log("hi");
-    // console.log([result.rows]);
-    // console.log(result.rows);
-    // console.log(result.rows[0]);
     return result.rows;
   })
   .catch((err) => { 
     console.log(err.message)
   });
-
-  //return getAllProperties(null, 2);
 }
 exports.getAllReservations = getAllReservations;
 
@@ -147,11 +129,6 @@ exports.getAllReservations = getAllReservations;
  */
 const getAllProperties = (options, limit = 10) => {
   
-
-  // WHERE city LIKE '%ancouv%'
-  //   GROUP BY properties.id
-  //   HAVING avg(property_reviews.rating) >= 4
-  //   ORDER BY cost_per_night
 
   const queryParams = [];
 
@@ -222,11 +199,6 @@ const getAllProperties = (options, limit = 10) => {
   .catch((err) => { 
     console.log(err.message)
   });
-  // const limitedProperties = {};
-  // for (let i = 1; i <= limit; i++) {
-  //   limitedProperties[i] = properties[i];
-  // }
-  // return Promise.resolve(limitedProperties);
 }
 exports.getAllProperties = getAllProperties;
 
@@ -251,18 +223,10 @@ const addProperty = function(property) {
   `, [property.owner_id, property.title, property.description, property.thumbnail_photo_url, property.cover_photo_url,
      property.cost_per_night, property.parking_spaces, property.number_of_bathrooms, property.number_of_bedrooms, property.country, property.street, property.city, property.province, property.post_code])
   .then((result) => {
-    // console.log(result.rows);
-    // console.log("hi");
-    // console.log(result);
     return result;
   })
   .catch((err) => { 
     console.log(err.message)
   });
-
-  // const propertyId = Object.keys(properties).length + 1;
-  // property.id = propertyId;
-  // properties[propertyId] = property;
-  // return Promise.resolve(property);
 }
 exports.addProperty = addProperty;
